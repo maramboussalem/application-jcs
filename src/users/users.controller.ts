@@ -1,4 +1,6 @@
 import { Controller ,Get,Query,Post,Put,Delete,Param,Body,Headers } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto/create-user.dto';
+import { stat } from 'fs';
 
 
 let users = [
@@ -29,10 +31,11 @@ export class UsersController {
   }
 
   @Post()
-  create(@Headers('authorization') auth: string, @Body() data){
+  create(@Headers('authorization') auth: string, @Body() data:CreateUserDto){
    console.log('Token envoyé par le client : ', auth);
    const newUser ={
      id: Date.now(),
+     status: 'active',
      ...data,
    }
    users.push(newUser);
@@ -61,4 +64,8 @@ export class UsersController {
     return { message: 'User not found' };
   }
 
+  @Get('status/:status')
+  findByStatus(@Param('status') status: string) {
+    return users.filter(user => user.status === status);
+  } 
 }
